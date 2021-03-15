@@ -18,6 +18,7 @@ const Container = (props: Props) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
   const inputRef = useRef<HTMLInputElement>(null);
   console.log(uploadedFiles);
+  const imageClassName = draggedOver ? "dragged" : "";
 
   const handleDragOver = (e: dragEvent) => {
     e.preventDefault();
@@ -42,14 +43,14 @@ const Container = (props: Props) => {
         draggedOver={draggedOver}
       >
         <ImageContainer>
-          {renderFileImage(`center ${draggedOver ? "dragged" : ""}`)}
-          {renderFileImage(`left ${draggedOver ? "dragged" : ""}`)}
-          {renderFileImage(`right ${draggedOver ? "dragged" : ""}`)}
+          {renderFileImage(`center ${imageClassName}`)}
+          {renderFileImage(`left ${imageClassName}`)}
+          {renderFileImage(`right ${imageClassName}`)}
         </ImageContainer>
         <input type="file" ref={inputRef} onChange={(E) => console.log(E)} />
         <TextContainer>
           <Text>
-            Drop Your files here or,{" "}
+            Drop Your files here or
             <span onClick={() => inputRef?.current?.click()}>browse</span>
           </Text>
         </TextContainer>
@@ -63,7 +64,8 @@ export default Container;
 const UploadContainer = styled.div`
   background-color: #fff;
   border-radius: 30px;
-  box-shadow: -1px 8px 18px 3px #00000040;
+  box-shadow: 0px 17px 18px 3px #0000001f;
+  margin: 25px;
 `;
 
 const DropZone = styled.div<{ draggedOver: boolean }>`
@@ -114,11 +116,12 @@ const ImageContainer = styled.div`
 
 const TextContainer = styled.div``;
 
-const Text = styled.p<{ size?: "large" }>`
+export const Text = styled.p<{ size?: "large" }>`
   font-size: ${(props) => (props.size === "large" ? "24px" : "16px")};
 
   span {
     cursor: pointer;
+    margin: 0 5px;
     color: #3ddd28;
   }
 `;
