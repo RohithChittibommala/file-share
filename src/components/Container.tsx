@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
+import LinesEllipsis from "react-lines-ellipsis";
 interface Props {
-  handleFileUpload: (files: FileList) => void;
+  handleFileUpload: (files: File) => void;
 }
 
 type dragEvent = React.DragEvent<HTMLDivElement>;
-type inputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 const renderFileImage = (className: string) => (
   <img
     src={require("../file.svg").default}
@@ -34,9 +34,8 @@ const Container = ({ handleFileUpload }: Props) => {
     e.preventDefault();
     setDraggedOver(false);
     const { files } = e.dataTransfer;
-    const file = files[0];
-    setFile(files[0]);
-    // if (files.length) handleFileUpload(files);
+
+    if (files.length) setFile(files[0]);
   };
 
   const handleFileRemoval = () => {
@@ -76,11 +75,16 @@ const Container = ({ handleFileUpload }: Props) => {
         ) : (
           <FileCard>
             <div>
-              <Text>{file.name}</Text>
+              <LinesEllipsis
+                text={file.name}
+                maxLine="1"
+                className="file-name"
+              />
               <p className="remove" onClick={handleFileRemoval}>
                 remove
               </p>
             </div>
+            <Button onClick={() => handleFileUpload(file)}>Upload</Button>
           </FileCard>
         )}
         {renderFileInput()}
@@ -153,7 +157,8 @@ const FileCard = styled.div`
   padding: 18px 12px;
   border-radius: 6px;
   display: flex;
-
+  flex-direction: column;
+  justify-content: center;
   div {
     width: 100%;
     display: flex;
@@ -164,9 +169,25 @@ const FileCard = styled.div`
       position: absolute;
       right: 0;
       color: red;
+      height: 100%;
+      background-color: #fff;
+
       cursor: pointer;
     }
   }
+`;
+
+const Button = styled.button`
+  width: 160px;
+  margin: 10px auto;
+  border: none;
+  color: #fff;
+  background: #1c92c0;
+  padding: 6px 4px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  outline: none;
 `;
 
 export const Text = styled.p<{ size?: "large"; center?: boolean }>`

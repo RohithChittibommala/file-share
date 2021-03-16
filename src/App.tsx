@@ -35,11 +35,10 @@ const App = (props: Props) => {
     },
   };
 
-  const handleFileUpload = async (files: FileList) => {
+  const handleFileUpload = async (file: File) => {
     const _cancelToken = axios.CancelToken.source();
     setFileSelected(true);
     canceller.current = _cancelToken.cancel;
-    const file = files[0];
     const formData = new FormData();
 
     formData.append("myfile", file);

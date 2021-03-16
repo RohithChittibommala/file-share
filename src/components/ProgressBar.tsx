@@ -24,6 +24,7 @@ const Button = styled.div`
   color: red;
   margin: 0 12px;
   height: 100%;
+  cursor: pointer;
 `;
 
 const ProgressBarContainer = styled.div`
