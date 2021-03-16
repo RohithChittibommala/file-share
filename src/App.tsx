@@ -1,7 +1,9 @@
 import { useRef, useState } from "react";
-import Container from "./components/Container";
+import Container, { Text } from "./components/Container";
 import ProgressBar from "./components/ProgressBar";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import messages from "./utlis";
 
 interface Props {}
 
@@ -12,7 +14,18 @@ const App = (props: Props) => {
   const [isFileSelected, setFileSelected] = useState<boolean>(false);
   const canceller = useRef((message?: string) => {});
 
-  console.log(width);
+  const emitToast = (type: "success" | "info") => {
+    const toastEmitter = toast[type];
+    toastEmitter(messages[type], {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
 
   const uploadOptions = {
     onUploadProgress: (progressEvent: ProgressEvent) => {
@@ -39,21 +52,28 @@ const App = (props: Props) => {
       .then((res) => {
         setWidth(0);
         setFileSelected(false);
+        emitToast("success");
+        console.log(res);
       })
       .catch((er) => console.log(er));
   };
 
   const cancelFileUpload = () => {
     canceller.current("user asked to cancel");
+    emitToast("info");
     setWidth(0);
     setFileSelected(false);
   };
 
   return (
     <div className="app">
+      <ToastContainer />
       <Container handleFileUpload={handleFileUpload} />
       {isFileSelected && (
-        <ProgressBar width={width} cancelFileUpload={cancelFileUpload} />
+        <div>
+          <ProgressBar width={width} cancelFileUpload={cancelFileUpload} />
+          <Text center>{width}% completed</Text>
+        </div>
       )}
     </div>
   );

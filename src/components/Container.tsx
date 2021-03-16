@@ -5,7 +5,7 @@ interface Props {
 }
 
 type dragEvent = React.DragEvent<HTMLDivElement>;
-
+type inputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 const renderFileImage = (className: string) => (
   <img
     src={require("../file.svg").default}
@@ -17,6 +17,7 @@ const renderFileImage = (className: string) => (
 
 const Container = ({ handleFileUpload }: Props) => {
   const [draggedOver, setDraggedOver] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const imageClassName = draggedOver ? "dragged" : "";
@@ -33,8 +34,22 @@ const Container = ({ handleFileUpload }: Props) => {
     e.preventDefault();
     setDraggedOver(false);
     const { files } = e.dataTransfer;
-    if (files.length) handleFileUpload(files);
+    const file = files[0];
+    setFile(files[0]);
+    // if (files.length) handleFileUpload(files);
   };
+
+  const handleFileRemoval = () => {
+    setFile(null);
+  };
+
+  const renderFileInput = () => (
+    <input
+      type="file"
+      ref={inputRef}
+      onChange={(e) => e.target.files && setFile(e.target.files[0])}
+    />
+  );
 
   return (
     <UploadContainer>
@@ -44,22 +59,31 @@ const Container = ({ handleFileUpload }: Props) => {
         onDrop={handleOnDrop}
         draggedOver={draggedOver}
       >
-        <ImageContainer>
-          {renderFileImage(`center ${imageClassName}`)}
-          {renderFileImage(`left ${imageClassName}`)}
-          {renderFileImage(`right ${imageClassName}`)}
-        </ImageContainer>
-        <input
-          type="file"
-          ref={inputRef}
-          onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
-        />
-        <TextContainer>
-          <Text>
-            Drop Your files here or
-            <span onClick={() => inputRef?.current?.click()}>browse</span>
-          </Text>
-        </TextContainer>
+        {!file ? (
+          <>
+            <ImageContainer>
+              {renderFileImage(`center ${imageClassName}`)}
+              {renderFileImage(`left ${imageClassName}`)}
+              {renderFileImage(`right ${imageClassName}`)}
+            </ImageContainer>
+            <TextContainer>
+              <Text center>
+                Drop Your files here or
+                <span onClick={() => inputRef?.current?.click()}>browse</span>
+              </Text>
+            </TextContainer>
+          </>
+        ) : (
+          <FileCard>
+            <div>
+              <Text>{file.name}</Text>
+              <p className="remove" onClick={handleFileRemoval}>
+                remove
+              </p>
+            </div>
+          </FileCard>
+        )}
+        {renderFileInput()}
       </DropZone>
     </UploadContainer>
   );
@@ -77,6 +101,7 @@ const UploadContainer = styled.div`
 const DropZone = styled.div<{ draggedOver: boolean }>`
   width: 500px;
   transition: 200ms ease-in all;
+  padding: 0 12px;
   max-width: 100%;
   min-height: 200px;
   background: ${({ draggedOver }) => draggedOver && "#eff5fe"};
@@ -93,9 +118,8 @@ const DropZone = styled.div<{ draggedOver: boolean }>`
     display: none;
   }
 `;
-
 const ImageContainer = styled.div`
-  height: 100px;
+  height: 85px;
   width: 75px;
   img {
     width: 75px;
@@ -119,11 +143,35 @@ const ImageContainer = styled.div`
     transform: rotate(-15deg) translateX(-20px) scale(0.9);
   }
 `;
+const TextContainer = styled.div`
+  padding: 12px;
+`;
 
-const TextContainer = styled.div``;
+const FileCard = styled.div`
+  box-shadow: -1px 2px 14px 0px #3498db2e;
+  width: 100%;
+  padding: 18px 12px;
+  border-radius: 6px;
+  display: flex;
 
-export const Text = styled.p<{ size?: "large" }>`
+  div {
+    width: 100%;
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+
+    .remove {
+      position: absolute;
+      right: 0;
+      color: red;
+      cursor: pointer;
+    }
+  }
+`;
+
+export const Text = styled.p<{ size?: "large"; center?: boolean }>`
   font-size: ${(props) => (props.size === "large" ? "24px" : "16px")};
+  text-align: ${({ center }) => center && "center"};
 
   span {
     cursor: pointer;
