@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
-interface Props {}
+interface Props {
+  handleFileUpload: (files: FileList) => void;
+}
 
 type dragEvent = React.DragEvent<HTMLDivElement>;
 
@@ -13,11 +15,10 @@ const renderFileImage = (className: string) => (
   />
 );
 
-const Container = (props: Props) => {
+const Container = ({ handleFileUpload }: Props) => {
   const [draggedOver, setDraggedOver] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<FileList>();
+
   const inputRef = useRef<HTMLInputElement>(null);
-  console.log(uploadedFiles);
   const imageClassName = draggedOver ? "dragged" : "";
 
   const handleDragOver = (e: dragEvent) => {
@@ -31,7 +32,8 @@ const Container = (props: Props) => {
   const handleOnDrop = (e: dragEvent) => {
     e.preventDefault();
     setDraggedOver(false);
-    if (e.dataTransfer.files.length) setUploadedFiles(e.dataTransfer.files);
+    const { files } = e.dataTransfer;
+    if (files.length) handleFileUpload(files);
   };
 
   return (
@@ -47,7 +49,11 @@ const Container = (props: Props) => {
           {renderFileImage(`left ${imageClassName}`)}
           {renderFileImage(`right ${imageClassName}`)}
         </ImageContainer>
-        <input type="file" ref={inputRef} onChange={(E) => console.log(E)} />
+        <input
+          type="file"
+          ref={inputRef}
+          onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+        />
         <TextContainer>
           <Text>
             Drop Your files here or
@@ -63,7 +69,7 @@ export default Container;
 
 const UploadContainer = styled.div`
   background-color: #fff;
-  border-radius: 30px;
+  border-radius: 18px;
   box-shadow: 0px 17px 18px 3px #0000001f;
   margin: 25px;
 `;

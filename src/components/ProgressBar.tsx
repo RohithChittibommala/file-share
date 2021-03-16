@@ -1,11 +1,10 @@
 import styled from "styled-components";
-import { Text } from "./Container";
-
 interface Props {
   width: number;
+  cancelFileUpload: () => void;
 }
 
-const ProgressBar: React.FC<Props> = ({ width }) => {
+const ProgressBar: React.FC<Props> = ({ width, cancelFileUpload }) => {
   console.log(width);
 
   return (
@@ -13,32 +12,31 @@ const ProgressBar: React.FC<Props> = ({ width }) => {
       <ProgressBarDiv>
         <ProgressBarInnerDiv width={width} />
       </ProgressBarDiv>
-      <Text>
-        {width}% upload{width / 100 ? "ing" : "ed"}
-      </Text>
+      {width / 100 < 1 && <Button onClick={cancelFileUpload}>cancel</Button>}
     </ProgressBarContainer>
   );
 };
 
 export default ProgressBar;
 
+const Button = styled.div`
+  background: transparent;
+  color: red;
+  margin: 0 12px;
+  height: 100%;
+`;
+
 const ProgressBarContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   justify-content: center;
-
-  p {
-    text-align: center;
-    margin: 10px 0;
-    font-size: 18px;
-    font-weight: bold;
-  }
+  align-items: center;
 `;
 
 const ProgressBarDiv = styled.div`
   min-width: 350px;
   width: 60%;
-  height: 10px;
+  height: 13px;
 `;
 
 const ProgressBarInnerDiv = styled.div<{ width: number }>`
@@ -48,8 +46,8 @@ const ProgressBarInnerDiv = styled.div<{ width: number }>`
     else if (width > 30) return "#046582";
   }};
   border-radius: 1rem;
-  transition: 1s ease;
+  transition: 200ms ease;
   height: 100%;
-  transition-delay: 0.15s;
+  transition-delay: 50ms;
   width: ${(props) => `${props.width}%`};
 `;
