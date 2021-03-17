@@ -47,8 +47,8 @@ const ProgressBarInnerDiv = styled.div<{ width: number }>`
     else if (width > 30) return "#046582";
   }};
   border-radius: 1rem;
-  transition: 200ms ease;
+  transition: 200ms linear width;
   height: 100%;
-  transition-delay: 50ms;
+  /* transition-delay: 50ms; */
   width: ${(props) => `${props.width}%`};
 `;

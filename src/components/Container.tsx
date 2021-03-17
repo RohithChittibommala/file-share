@@ -84,7 +84,14 @@ const Container = ({ handleFileUpload }: Props) => {
                 remove
               </p>
             </div>
-            <Button onClick={() => handleFileUpload(file)}>Upload</Button>
+            <Button
+              onClick={() => {
+                setFile(null);
+                handleFileUpload(file);
+              }}
+            >
+              Upload
+            </Button>
           </FileCard>
         )}
         {renderFileInput()}
