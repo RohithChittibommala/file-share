@@ -35,6 +35,7 @@ const Container = ({ handleFileUpload }: Props) => {
   const handleOnDrop = (e: dragEvent) => {
     e.preventDefault();
     setDraggedOver(false);
+    setFile(null);
     const { files } = e.dataTransfer;
 
     if (files.length) {
@@ -64,7 +65,7 @@ const Container = ({ handleFileUpload }: Props) => {
   );
 
   return (
-    <UploadContainer>
+    <UploadContainer fileSizeExceeded={fileSizeExceeded}>
       <DropZone
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -78,6 +79,9 @@ const Container = ({ handleFileUpload }: Props) => {
               {fileSizeExceeded ? (
                 <>
                   <ErrorText>sorry your files are too heavy</ErrorText>
+                  <ErrorTextSmall>
+                    Max file size is 10.00 MB please.
+                  </ErrorTextSmall>
                 </>
               ) : (
                 <Text center>
@@ -103,11 +107,13 @@ const Container = ({ handleFileUpload }: Props) => {
 
 export default Container;
 
-const UploadContainer = styled.div`
-  background-color: #fff;
+const UploadContainer = styled.div<{ fileSizeExceeded: boolean }>`
+  background-color: ${({ fileSizeExceeded }) =>
+    fileSizeExceeded ? "#F04747" : "#fff"};
   border-radius: 10px;
   box-shadow: 0px 17px 18px 3px #0000001f;
   margin: 25px;
+  transition: 200ms ease-in background-color;
 `;
 
 const DropZone = styled.div<{
@@ -129,6 +135,8 @@ const DropZone = styled.div<{
   justify-content: center;
   align-items: center;
   background-color: ${({ fileSizeExceeded }) => fileSizeExceeded && `#F04747`};
+  border: ${({ fileSizeExceeded }) =>
+    fileSizeExceeded && "dashed hsla(0,0%,100%,.4)"};
   input {
     display: none;
   }
@@ -149,6 +157,13 @@ const TextContainer = styled.div`
 `;
 
 const ErrorText = styled.h2`
-  font-weight: bold;
+  font-weight: 700;
   color: #fbd1d1;
+  font-family: "Montserrat", sans-serif;
+`;
+
+const ErrorTextSmall = styled.p`
+  color: #fbd1d1;
+  font-size: 16px;
+  text-align: center;
 `;

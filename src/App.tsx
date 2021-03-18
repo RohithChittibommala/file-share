@@ -1,18 +1,31 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Container, { Text } from "./components/Container";
 import ProgressBar from "./components/ProgressBar";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import messages from "./utlis";
-
 interface Props {}
+
+type uploadedUrl = {
+  link: string;
+  fileName: string;
+  time: number;
+};
 
 const uploadUrl = `https://innshare.herokuapp.com/api/files`;
 
 const App = (props: Props) => {
   const [width, setWidth] = useState(0);
   const [isFileSelected, setFileSelected] = useState<boolean>(false);
+  const [uploadFileUrl, setUploadedFileUrl] = useState<uploadedUrl[]>();
   const canceller = useRef((message?: string) => {});
+
+  useEffect(() => {
+    const linksArray = localStorage.getItem("links");
+    if (linksArray) {
+      setUploadedFileUrl(JSON.parse(linksArray));
+    }
+  }, []);
 
   const emitToast = (type: "success" | "info") => {
     const toastEmitter = toast[type];
@@ -43,18 +56,26 @@ const App = (props: Props) => {
 
     formData.append("myfile", file);
     console.log(formData);
-    axios
-      .post(uploadUrl, formData, {
+
+    try {
+      const { data } = await axios.post(uploadUrl, formData, {
         ...uploadOptions,
         cancelToken: _cancelToken.token,
-      })
-      .then((res) => {
-        setWidth(0);
-        setFileSelected(false);
-        emitToast("success");
-        console.log(res);
-      })
-      .catch((er) => console.log(er));
+      });
+
+      const res = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}?key=${process.env.REACT_APP_API_KEY}&short=${data.file}`
+      );
+
+      console.log(res.data);
+
+      setWidth(0);
+      setFileSelected(false);
+      emitToast("success");
+      console.log(data);
+    } catch (er) {
+      console.log(er);
+    }
   };
 
   const cancelFileUpload = () => {
