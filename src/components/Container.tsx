@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
-import LinesEllipsis from "react-lines-ellipsis";
+import FileCard from "./FileCard";
+import ImageContainer from "./ImageContainer";
 interface Props {
   handleFileUpload: (files: File) => void;
 }
@@ -18,6 +19,7 @@ const renderFileImage = (className: string) => (
 const Container = ({ handleFileUpload }: Props) => {
   const [draggedOver, setDraggedOver] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const imageClassName = draggedOver ? "dragged" : "";
@@ -35,7 +37,18 @@ const Container = ({ handleFileUpload }: Props) => {
     setDraggedOver(false);
     const { files } = e.dataTransfer;
 
-    if (files.length) setFile(files[0]);
+    if (files.length) {
+      const file = files[0];
+      const fileSize = Math.floor(file.size / Math.pow(1024, 2));
+
+      if (fileSize < 10) {
+        setFile(files[0]);
+        setFileSizeExceeded(false);
+        return;
+      }
+
+      setFileSizeExceeded(true);
+    }
   };
 
   const handleFileRemoval = () => {
@@ -57,42 +70,30 @@ const Container = ({ handleFileUpload }: Props) => {
         onDragLeave={handleDragLeave}
         onDrop={handleOnDrop}
         draggedOver={draggedOver}
+        fileSizeExceeded={fileSizeExceeded}
       >
         {!file ? (
-          <>
-            <ImageContainer>
-              {renderFileImage(`center ${imageClassName}`)}
-              {renderFileImage(`left ${imageClassName}`)}
-              {renderFileImage(`right ${imageClassName}`)}
-            </ImageContainer>
+          <ImageContainer imageClassName={imageClassName} inputRef={inputRef}>
             <TextContainer>
-              <Text center>
-                Drop Your files here or
-                <span onClick={() => inputRef?.current?.click()}>browse</span>
-              </Text>
+              {fileSizeExceeded ? (
+                <>
+                  <ErrorText>sorry your files are too heavy</ErrorText>
+                </>
+              ) : (
+                <Text center>
+                  Drop Your files here or
+                  <span onClick={() => inputRef?.current?.click()}>browse</span>
+                </Text>
+              )}
             </TextContainer>
-          </>
+          </ImageContainer>
         ) : (
-          <FileCard>
-            <div>
-              <LinesEllipsis
-                text={file.name}
-                maxLine="1"
-                className="file-name"
-              />
-              <p className="remove" onClick={handleFileRemoval}>
-                remove
-              </p>
-            </div>
-            <Button
-              onClick={() => {
-                setFile(null);
-                handleFileUpload(file);
-              }}
-            >
-              Upload
-            </Button>
-          </FileCard>
+          <FileCard
+            file={file}
+            handleFileRemoval={handleFileRemoval}
+            handleFileUpload={handleFileUpload}
+            setFile={setFile}
+          />
         )}
         {renderFileInput()}
       </DropZone>
@@ -104,12 +105,15 @@ export default Container;
 
 const UploadContainer = styled.div`
   background-color: #fff;
-  border-radius: 18px;
+  border-radius: 10px;
   box-shadow: 0px 17px 18px 3px #0000001f;
   margin: 25px;
 `;
 
-const DropZone = styled.div<{ draggedOver: boolean }>`
+const DropZone = styled.div<{
+  draggedOver: boolean;
+  fileSizeExceeded: boolean;
+}>`
   width: 500px;
   transition: 200ms ease-in all;
   padding: 0 12px;
@@ -124,77 +128,10 @@ const DropZone = styled.div<{ draggedOver: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-
+  background-color: ${({ fileSizeExceeded }) => fileSizeExceeded && `#F04747`};
   input {
     display: none;
   }
-`;
-const ImageContainer = styled.div`
-  height: 85px;
-  width: 75px;
-  img {
-    width: 75px;
-    object-fit: contain;
-    position: absolute;
-    transition: transform 250ms ease-in-out;
-    transform-origin: bottom;
-  }
-  .center {
-    z-index: 3;
-  }
-  .dragged.center {
-    transform: translateY(-10px);
-  }
-  .dragged.left {
-    transform: rotate(15deg) translateX(20px) scale(0.9);
-    filter: grayscale(0.8);
-  }
-  .dragged.right {
-    filter: grayscale(0.8);
-    transform: rotate(-15deg) translateX(-20px) scale(0.9);
-  }
-`;
-const TextContainer = styled.div`
-  padding: 12px;
-`;
-
-const FileCard = styled.div`
-  box-shadow: -1px 2px 14px 0px #3498db2e;
-  width: 100%;
-  padding: 18px 12px;
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  div {
-    width: 100%;
-    display: flex;
-    position: relative;
-    justify-content: space-between;
-
-    .remove {
-      position: absolute;
-      right: 0;
-      color: red;
-      height: 100%;
-      background-color: #fff;
-
-      cursor: pointer;
-    }
-  }
-`;
-
-const Button = styled.button`
-  width: 160px;
-  margin: 10px auto;
-  border: none;
-  color: #fff;
-  background: #1c92c0;
-  padding: 6px 4px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  outline: none;
 `;
 
 export const Text = styled.p<{ size?: "large"; center?: boolean }>`
@@ -206,4 +143,12 @@ export const Text = styled.p<{ size?: "large"; center?: boolean }>`
     margin: 0 5px;
     color: #3ddd28;
   }
+`;
+const TextContainer = styled.div`
+  padding: 12px;
+`;
+
+const ErrorText = styled.h2`
+  font-weight: bold;
+  color: #fbd1d1;
 `;

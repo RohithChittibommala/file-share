@@ -17,7 +17,7 @@ const App = (props: Props) => {
   const emitToast = (type: "success" | "info") => {
     const toastEmitter = toast[type];
     toastEmitter(messages[type], {
-      position: "top-right",
+      position: "bottom-center",
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -67,7 +67,7 @@ const App = (props: Props) => {
   return (
     <div className="app">
       <ToastContainer />
-      <Container handleFileUpload={handleFileUpload} />
+      <Container handleFileUpload={handleFileUpload}></Container>
       {isFileSelected && (
         <div>
           <ProgressBar width={width} cancelFileUpload={cancelFileUpload} />
