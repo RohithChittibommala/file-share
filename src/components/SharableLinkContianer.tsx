@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import QRCode, { QRCodeProps } from "react-qr-code";
-
+import QRCode from "react-qr-code";
+import LinesEllipsis from "react-lines-ellipsis";
 interface Props {
   link: string;
   fileName: string;
@@ -21,8 +21,12 @@ const SharableLinkContainer = ({
       <Container>
         <LinkContainer>
           <TextContainer>
-            <Title>{fileName}</Title>{" "}
-            <span>{new Date(time).toLocaleString()}</span>
+            <Title>
+              <LinesEllipsis text={fileName} maxLine="1" />
+            </Title>
+            <span className="date">
+              {new Date(time).toLocaleString("en-IN")}
+            </span>
           </TextContainer>
           <TextContainer>
             <p>{link}</p>
@@ -65,7 +69,6 @@ const Wrapper = styled.div`
   width: 60%;
   min-width: 350px;
   margin: 15px auto;
-
   background: #fff;
   border-radius: 18px;
   box-shadow: 0px 7px 9px 5px #2626260a;
@@ -109,13 +112,21 @@ const TextContainer = styled.div`
   display: flex;
   justify-content: center;
   padding: 4px 8px;
+  flex-wrap: wrap;
   align-items: center;
   margin: 5px 0;
 
-  span {
+  span.date {
     margin: 0 10px;
+    text-align: center;
+    background: #e2fbfc;
+    padding: 3px;
+    border-radius: 8px;
+    color: #00aeb2;
+    font-weight: bold;
   }
   p {
+    text-align: center;
     padding: 3px 6px;
     background: #fafafa;
     color: #262626;
@@ -139,5 +150,13 @@ const TextContainer = styled.div`
 
 const Title = styled.h2`
   text-transform: uppercase;
-  color: #a7c1f1;
+  text-align: center;
+  color: #fff;
+  font-size: 18px;
+  background-color: #4a81e6;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  padding: 3px;
+  margin: 5px 0;
 `;

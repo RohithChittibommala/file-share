@@ -7,14 +7,6 @@ interface Props {
 }
 
 type dragEvent = React.DragEvent<HTMLDivElement>;
-const renderFileImage = (className: string) => (
-  <img
-    src={require("../file.svg").default}
-    alt="document svg"
-    draggable={false}
-    className={className}
-  />
-);
 
 const Container = ({ handleFileUpload }: Props) => {
   const [draggedOver, setDraggedOver] = useState(false);

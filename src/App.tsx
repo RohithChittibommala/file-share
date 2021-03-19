@@ -7,7 +7,8 @@ import { toast, ToastContainer } from "react-toastify";
 import messages from "./utlis";
 import SharableLinkContainer from "./components/SharableLinkContianer";
 import styled from "styled-components";
-import QRCode, { QRCodeProps } from "react-qr-code";
+import QRCode from "react-qr-code";
+import { checkIsLinkValid } from "./utlis";
 
 interface Props {}
 
@@ -25,14 +26,21 @@ const App = (props: Props) => {
   const [width, setWidth] = useState(0);
   const [isFileSelected, setFileSelected] = useState<boolean>(false);
   const [uploadedFileUrl, setUploadedFileUrl] = useState<uploadedUrl[]>([]);
-  const [qrCodeLink, setQrCodeLink] = useState("a");
+  const [qrCodeLink, setQrCodeLink] = useState("");
   const canceller = useRef((message?: string) => {});
 
   useEffect(() => {
-    const linksArray = localStorage.getItem("links");
-    if (linksArray) {
-      setUploadedFileUrl(JSON.parse(linksArray));
+    const linksArray: Array<uploadedUrl> = JSON.parse(
+      localStorage.getItem("links") || "[]"
+    );
+
+    if (linksArray.length) {
+      setUploadedFileUrl(
+        linksArray.filter((link) => link && checkIsLinkValid(link.time))
+      );
+      updateLocalStorage();
     }
+    console.log(uploadedFileUrl);
   }, []);
 
   const emitToast = (type: "success" | "info", message?: string) => {
@@ -56,10 +64,13 @@ const App = (props: Props) => {
     },
   };
 
-  const updateLocalStorage = (item: uploadedUrl) => {
+  const updateLocalStorage = (item?: uploadedUrl) => {
     const linksArrayJSON = localStorage.getItem("links");
-    const linksArray = JSON.parse(linksArrayJSON || "[]");
-    localStorage.setItem("links", JSON.stringify([...linksArray, item]));
+    let linksArray: uploadedUrl[] = JSON.parse(linksArrayJSON || "[]");
+    linksArray = linksArray.filter(
+      (link) => link && checkIsLinkValid(link.time)
+    );
+    localStorage.setItem("links", JSON.stringify([item, ...linksArray]));
   };
 
   const handleFileUpload = async (file: File) => {
@@ -115,7 +126,7 @@ const App = (props: Props) => {
         <Modal
           isOpen={qrCodeLink.length > 0}
           onRequestClose={() => setQrCodeLink("")}
-          style={{ overlay: { backgroundColor: "#ebebeb" } }}
+          style={{ overlay: { backgroundColor: "#4e4a4a" } }}
         >
           <QRCode value={qrCodeLink} className="qr-code" size={350} />
         </Modal>
@@ -131,6 +142,7 @@ const App = (props: Props) => {
         )}
       </div>
       <div>
+        <h1 className="active-links">Your's active links</h1>
         {uploadedFileUrl.map((url) => (
           <SharableLinkContainer
             {...url}
@@ -155,8 +167,9 @@ const Modal = styled(ReactModal)`
   background: #fff;
   display: flex;
   justify-content: center;
-  padding: 12px;
+  padding: 20px;
   min-width: 350px;
+  border-radius: 25px;
   outline: none;
 
   @media (max-width: 500px) {
