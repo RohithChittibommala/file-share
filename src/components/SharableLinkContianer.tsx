@@ -68,7 +68,7 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
   width: 60%;
   min-width: 350px;
-  margin: 15px auto;
+  margin: 30px auto;
   background: #fff;
   border-radius: 18px;
   box-shadow: 0px 7px 9px 5px #2626260a;
