@@ -4,6 +4,7 @@ import ProgressBar from "./components/ProgressBar";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import messages from "./utlis";
+import SharableLinkContainer from "./components/SharableLinkContianer";
 interface Props {}
 
 type uploadedUrl = {
@@ -17,7 +18,7 @@ const uploadUrl = `https://innshare.herokuapp.com/api/files`;
 const App = (props: Props) => {
   const [width, setWidth] = useState(0);
   const [isFileSelected, setFileSelected] = useState<boolean>(false);
-  const [uploadFileUrl, setUploadedFileUrl] = useState<uploadedUrl[]>();
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<uploadedUrl[]>([]);
   const canceller = useRef((message?: string) => {});
 
   useEffect(() => {
@@ -48,6 +49,12 @@ const App = (props: Props) => {
     },
   };
 
+  const updateLocalStorage = (item: uploadedUrl) => {
+    const linksArrayJSON = localStorage.getItem("links");
+    const linksArray = JSON.parse(linksArrayJSON || "[]");
+    localStorage.setItem("links", JSON.stringify([...linksArray, item]));
+  };
+
   const handleFileUpload = async (file: File) => {
     const _cancelToken = axios.CancelToken.source();
     setFileSelected(true);
@@ -67,8 +74,14 @@ const App = (props: Props) => {
         `${process.env.REACT_APP_BASE_URL}?key=${process.env.REACT_APP_API_KEY}&short=${data.file}`
       );
 
-      console.log(res.data);
+      const fileUrl = {
+        fileName: file.name,
+        time: Date.now(),
+        link: res.data.url["shortLink"],
+      };
 
+      setUploadedFileUrl((prev) => [...prev, fileUrl]);
+      updateLocalStorage(fileUrl);
       setWidth(0);
       setFileSelected(false);
       emitToast("success");
@@ -95,6 +108,9 @@ const App = (props: Props) => {
           <Text center>{width}% completed</Text>
         </div>
       )}
+      {uploadedFileUrl.map((url) => (
+        <SharableLinkContainer {...url} key={url.time} />
+      ))}
     </div>
   );
 };
