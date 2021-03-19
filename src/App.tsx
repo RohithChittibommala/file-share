@@ -9,6 +9,7 @@ import SharableLinkContainer from "./components/SharableLinkContianer";
 import styled from "styled-components";
 import QRCode from "react-qr-code";
 import { checkIsLinkValid } from "./utlis";
+import NavBar from "./components/NavBar";
 
 interface Props {}
 
@@ -122,6 +123,7 @@ const App = (props: Props) => {
 
   return (
     <div>
+      <NavBar />
       <div className="app">
         <Modal
           isOpen={qrCodeLink.length > 0}
