@@ -1,6 +1,5 @@
 import { ReactChild } from "react";
 import styled from "styled-components";
-import { Text } from "./Container";
 
 interface Props {
   imageClassName: string;
@@ -39,12 +38,13 @@ const ImageContainerDiv = styled.div`
   img {
     width: 75px;
     object-fit: contain;
+    display: block;
     position: absolute;
     transition: transform 250ms ease-in-out;
     transform-origin: bottom;
   }
   .center {
-    z-index: 3;
+    z-index: 1;
   }
   .dragged.center {
     transform: translateY(-10px);

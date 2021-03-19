@@ -37,6 +37,7 @@ const FileCardContainer = styled.div`
   width: 100%;
   padding: 18px 12px;
   border-radius: 6px;
+  margin: 0 12px;
   display: flex;
   flex-direction: column;
   justify-content: center;

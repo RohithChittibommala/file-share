@@ -112,7 +112,9 @@ const UploadContainer = styled.div<{ fileSizeExceeded: boolean }>`
     fileSizeExceeded ? "#F04747" : "#fff"};
   border-radius: 10px;
   box-shadow: 0px 17px 18px 3px #0000001f;
-  margin: 25px;
+  padding: 25px;
+  width: 50%;
+  min-width: 350px;
   transition: 200ms ease-in background-color;
 `;
 
@@ -120,16 +122,15 @@ const DropZone = styled.div<{
   draggedOver: boolean;
   fileSizeExceeded: boolean;
 }>`
-  width: 500px;
+  width: 100%;
   transition: 200ms ease-in all;
-  padding: 0 12px;
+  padding: 12px;
   max-width: 100%;
   min-height: 200px;
   background: ${({ draggedOver }) => draggedOver && "#eff5fe"};
   border: ${({ draggedOver }) =>
     draggedOver ? "4px dashed #2196f3" : "2px dashed #0288d147"};
   border-radius: 10px;
-  margin: 30px;
   flex-direction: column;
   display: flex;
   justify-content: center;

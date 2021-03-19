@@ -6,12 +6,15 @@
   padding: 0;
   box-sizing: border-box;
 }
+body {
+  background-color: #ebf2f0;
+}
 
 .app {
-  background-color: #eff5fe;
-  width: 100vw;
+  width: 100%;
   flex-direction: column;
   display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -23,4 +26,8 @@
 
 .file-name {
   text-align: center;
+}
+
+.progress-bar-div {
+  margin: 50px 0;
 }
