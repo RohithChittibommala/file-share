@@ -1,19 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import ReactModal from "react-modal";
-import axios from "axios";
-import Container, { Text } from "./components/Container";
-import ProgressBar from "./components/ProgressBar";
-import { toast, ToastContainer } from "react-toastify";
-import messages from "./utlis";
-import SharableLinkContainer from "./components/SharableLinkContianer";
-import styled from "styled-components";
-import QRCode from "react-qr-code";
-import { checkIsLinkValid } from "./utlis";
+import { Route, Switch } from "react-router";
+import Download from "./components/Download";
+import Home from "./components/Home";
 import NavBar from "./components/NavBar";
 
 interface Props {}
-
-ReactModal.setAppElement("#root");
 
 type uploadedUrl = {
   link: string;
@@ -21,160 +11,16 @@ type uploadedUrl = {
   time: number;
 };
 
-const uploadUrl = `https://innshare.herokuapp.com/api/files`;
-
 const App = (props: Props) => {
-  const [width, setWidth] = useState(0);
-  const [isFileSelected, setFileSelected] = useState<boolean>(false);
-  const [uploadedFileUrl, setUploadedFileUrl] = useState<uploadedUrl[]>([]);
-  const [qrCodeLink, setQrCodeLink] = useState("");
-  const canceller = useRef((message?: string) => {});
-
-  useEffect(() => {
-    const linksArray: Array<uploadedUrl> = JSON.parse(
-      localStorage.getItem("links") || "[]"
-    );
-
-    if (linksArray.length) {
-      setUploadedFileUrl(
-        linksArray.filter((link) => link && checkIsLinkValid(link.time))
-      );
-      updateLocalStorage();
-    }
-    console.log(uploadedFileUrl);
-  }, []);
-
-  const emitToast = (type: "success" | "info", message?: string) => {
-    const toastEmitter = toast[type];
-    toastEmitter(message || messages[type], {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
-
-  const uploadOptions = {
-    onUploadProgress: (progressEvent: ProgressEvent) => {
-      const { loaded, total } = progressEvent;
-      const percentage = (loaded / total) * 100;
-      setWidth(Math.round(percentage));
-    },
-  };
-
-  const updateLocalStorage = (item?: uploadedUrl) => {
-    const linksArrayJSON = localStorage.getItem("links");
-    let linksArray: uploadedUrl[] = JSON.parse(linksArrayJSON || "[]");
-    linksArray = linksArray.filter(
-      (link) => link && checkIsLinkValid(link.time)
-    );
-    localStorage.setItem("links", JSON.stringify([item, ...linksArray]));
-  };
-
-  const handleFileUpload = async (file: File) => {
-    const _cancelToken = axios.CancelToken.source();
-    setFileSelected(true);
-    canceller.current = _cancelToken.cancel;
-    const formData = new FormData();
-
-    formData.append("myfile", file);
-    console.log(formData);
-
-    try {
-      const { data } = await axios.post(uploadUrl, formData, {
-        ...uploadOptions,
-        cancelToken: _cancelToken.token,
-      });
-
-      const res = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}?key=${process.env.REACT_APP_API_KEY}&short=${data.file}`
-      );
-
-      const fileUrl = {
-        fileName: file.name,
-        time: Date.now(),
-        link: res.data.url["shortLink"],
-      };
-
-      setUploadedFileUrl((prev) => [...prev, fileUrl]);
-      updateLocalStorage(fileUrl);
-      setWidth(0);
-      setFileSelected(false);
-      emitToast("success");
-      console.log(data);
-    } catch (er) {
-      console.log(er);
-    }
-  };
-
-  const cancelFileUpload = () => {
-    canceller.current("user asked to cancel");
-    emitToast("info");
-    setWidth(0);
-    setFileSelected(false);
-  };
-
-  const handleQrCodeSelect = (qrCodeLink: string) => {
-    setQrCodeLink(qrCodeLink);
-  };
-
   return (
     <div>
       <NavBar />
-      <div className="app">
-        <Modal
-          isOpen={qrCodeLink.length > 0}
-          onRequestClose={() => setQrCodeLink("")}
-          style={{ overlay: { backgroundColor: "#4e4a4a" } }}
-        >
-          <QRCode value={qrCodeLink} className="qr-code" size={350} />
-        </Modal>
-        <ToastContainer />
-        {!qrCodeLink && (
-          <Container handleFileUpload={handleFileUpload}></Container>
-        )}
-        {isFileSelected && (
-          <div className="progress-bar-div">
-            <ProgressBar width={width} cancelFileUpload={cancelFileUpload} />
-            <Text center>{width}% completed</Text>
-          </div>
-        )}
-      </div>
-      <div>
-        <h1 className="active-links">Your's active links</h1>
-        {uploadedFileUrl.map((url) => (
-          <SharableLinkContainer
-            {...url}
-            key={url.time}
-            emitToast={emitToast}
-            setQrcode={handleQrCodeSelect}
-          />
-        ))}
-      </div>
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route path="/download/:id" exact component={Download} />
+      </Switch>
     </div>
   );
 };
 
 export default App;
-
-const Modal = styled(ReactModal)`
-  position: absolute;
-  top: 35%;
-  left: 35%;
-  z-index: 999;
-  width: 30%;
-  background: #fff;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  min-width: 350px;
-  border-radius: 25px;
-  outline: none;
-
-  @media (max-width: 500px) {
-    left: 7%;
-  }
-`;

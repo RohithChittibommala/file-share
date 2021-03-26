@@ -1,23 +1,29 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 interface Props {}
 
 const setOnScrollListener = (
-  setHasMinHeight: React.Dispatch<React.SetStateAction<boolean>>
+  setHasMinHeight: React.Dispatch<React.SetStateAction<boolean>>,
+  hasMinHeight: boolean
 ) =>
   window.addEventListener("scroll", (e) => {
-    window.scrollY > 10 ? setHasMinHeight(true) : setHasMinHeight(false);
+    window.scrollY > 10
+      ? !hasMinHeight && setHasMinHeight(true)
+      : hasMinHeight && setHasMinHeight(false);
   });
 
 const NavBar = (props: Props) => {
   const [hasMinHeight, setHasMinHeight] = useState(false);
-  setOnScrollListener(setHasMinHeight);
+  setOnScrollListener(setHasMinHeight, hasMinHeight);
 
   console.log("rerendered");
   return (
     <Wrapper hasBoxShadow={hasMinHeight}>
-      <Logo>Anonymous Share</Logo>
+      <Logo>
+        <NavLink to="/">Anonymous Share</NavLink>
+      </Logo>
       <Button>
         <a href="https://github.com/RohithChittibommala/file-share">GitHub</a>
       </Button>
@@ -57,5 +63,13 @@ const Button = styled.div`
 
   a {
     text-decoration: none;
+  }
+`;
+
+const NavLink = styled(Link)`
+  text-decoration: none;
+  font-weight: bold;
+  &:active {
+    color: black;
   }
 `;

@@ -63,16 +63,17 @@ const SharableLinkContainer = ({
 export default SharableLinkContainer;
 
 const Wrapper = styled.div`
-  padding: 12px;
   display: flex;
   flex-wrap: wrap;
   width: 60%;
   min-width: 350px;
   margin: 30px auto;
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0px 7px 9px 5px #2626260a;
-  transition: 200ms ease-in all;
+  transition: all 0.15s ease-out;
+  padding: 1.5rem;
+  border: 2px solid #443385;
+  box-shadow: -8px 8px #e1e1fc;
+  border-radius: 4px;
   &:hover {
     box-shadow: none;
   }

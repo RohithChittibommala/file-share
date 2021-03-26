@@ -33,8 +33,7 @@ const Container = ({ handleFileUpload }: Props) => {
     if (files.length) {
       const file = files[0];
       const fileSize = Math.floor(file.size / Math.pow(1024, 2));
-
-      if (fileSize < 10) {
+      if (fileSize < 24) {
         setFile(files[0]);
         setFileSizeExceeded(false);
         return;
@@ -104,7 +103,10 @@ const UploadContainer = styled.div<{ fileSizeExceeded: boolean }>`
     fileSizeExceeded ? "#F04747" : "#fff"};
   border-radius: 10px;
   box-shadow: 0px 17px 18px 3px #0000001f;
+  height: 300px;
   padding: 25px;
+  display: flex;
+  align-items: center;
   width: 50%;
   min-width: 350px;
   transition: 200ms ease-in background-color;
@@ -119,6 +121,7 @@ const DropZone = styled.div<{
   padding: 12px;
   max-width: 100%;
   min-height: 200px;
+  height: 100%;
   background: ${({ draggedOver }) => draggedOver && "#eff5fe"};
   border: ${({ draggedOver }) =>
     draggedOver ? "4px dashed #2196f3" : "2px dashed #0288d147"};
