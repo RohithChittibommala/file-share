@@ -15,7 +15,7 @@ type uploadedUrl = {
   time: number;
 };
 
-const uploadUrl = `http://localhost:4000/api/files`;
+const uploadUrl = `${process.env.REACT_APP_API_URL}/api/files`;
 const Home = (props: Props) => {
   const [width, setWidth] = useState(0);
   const [isFileSelected, setFileSelected] = useState<boolean>(false);
@@ -37,9 +37,9 @@ const Home = (props: Props) => {
     console.log(uploadedFileUrl);
   }, []);
 
-  const emitToast = (type: "success" | "info", message?: string) => {
+  const emitToast = (type: "success" | "info" | "error", message?: string) => {
     const toastEmitter = toast[type];
-    toastEmitter(message || messages[type], {
+    toastEmitter(message, {
       position: "top-center",
       autoClose: 5000,
       hideProgressBar: false,
@@ -97,7 +97,7 @@ const Home = (props: Props) => {
       emitToast("success");
       console.log(data);
     } catch (er) {
-      console.log(er);
+      emitToast("error", er.message);
     }
   };
 

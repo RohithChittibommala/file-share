@@ -68,7 +68,10 @@ const Button = styled.div`
 
 const NavLink = styled(Link)`
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: #d8465e;
+  font-family: "Poppins", sans-serif;
   &:active {
     color: black;
   }

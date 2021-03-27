@@ -5,12 +5,6 @@ import NavBar from "./components/NavBar";
 
 interface Props {}
 
-type uploadedUrl = {
-  link: string;
-  fileName: string;
-  time: number;
-};
-
 const App = (props: Props) => {
   return (
     <div>
