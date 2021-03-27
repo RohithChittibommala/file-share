@@ -33,7 +33,7 @@ const Container = ({ handleFileUpload }: Props) => {
     if (files.length) {
       const file = files[0];
       const fileSize = Math.floor(file.size / Math.pow(1024, 2));
-      if (fileSize < 24) {
+      if (fileSize < 25) {
         setFile(files[0]);
         setFileSizeExceeded(false);
         return;
@@ -71,7 +71,7 @@ const Container = ({ handleFileUpload }: Props) => {
                 <>
                   <ErrorText>sorry your files are too heavy</ErrorText>
                   <ErrorTextSmall>
-                    Max file size is 10.00 MB please.
+                    Max file size is 25.00 MB please.
                   </ErrorTextSmall>
                 </>
               ) : (
