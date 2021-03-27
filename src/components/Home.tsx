@@ -35,7 +35,7 @@ const Home = (props: Props) => {
       updateLocalStorage();
     }
     console.log(uploadedFileUrl);
-  }, []);
+  }, [uploadedFileUrl]);
 
   const emitToast = (type: "success" | "info" | "error", message?: string) => {
     const toastEmitter = toast[type];
@@ -80,9 +80,13 @@ const Home = (props: Props) => {
         cancelToken: _cancelToken.token,
       });
 
+      console.log(data.file);
+
       const res = await axios.get(
         `${process.env.REACT_APP_BASE_URL}?key=${process.env.REACT_APP_API_KEY}&short=${data.file}`
       );
+
+      console.log(res);
 
       const fileUrl = {
         fileName: file.name,
