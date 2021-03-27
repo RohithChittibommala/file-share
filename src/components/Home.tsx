@@ -124,7 +124,7 @@ const Home = (props: Props) => {
           onRequestClose={() => setQrCodeLink("")}
           style={{ overlay: { backgroundColor: "#4e4a4a" } }}
         >
-          <QRCode value={qrCodeLink} className="qr-code" size={350} />
+          <QRCode value={qrCodeLink} size={350} />
         </Modal>
         <ToastContainer />
         {!qrCodeLink && (
