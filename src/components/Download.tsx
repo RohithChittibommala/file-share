@@ -22,7 +22,7 @@ const Download = (props: Props) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/files/${id}`)
+      .get(`${process.env.REACT_APP_API_URL}/api/files/${id}`)
       .then((res) => setFile(res.data));
   }, [id]);
 
