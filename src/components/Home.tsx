@@ -35,7 +35,7 @@ const Home = (props: Props) => {
       updateLocalStorage();
     }
     console.log(uploadedFileUrl);
-  }, [uploadedFileUrl]);
+  }, []);
 
   const emitToast = (type: "success" | "info" | "error", message?: string) => {
     const toastEmitter = toast[type];
