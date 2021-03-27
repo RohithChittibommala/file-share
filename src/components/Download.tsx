@@ -17,13 +17,15 @@ type file = {
 const Download = (props: Props) => {
   const { id } = useParams<{ id: string }>();
   const [file, setFile] = useState<file>();
-
-  console.log(file);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/api/files/${id}`)
-      .then((res) => setFile(res.data));
+      .then((res) => {
+        setFile(res.data);
+        setLoading(false);
+      });
   }, [id]);
 
   const handleFileDownload = async () => {
@@ -74,7 +76,11 @@ const Download = (props: Props) => {
         </DownloadContainer>
       )}
       {!file && (
-        <Text color="black">We don't have this file or link is expired</Text>
+        <Text color="black">
+          {loading
+            ? "Loading ...."
+            : "We don't have this file or link is expired"}
+        </Text>
       )}
     </Wrapper>
   );
